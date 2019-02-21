@@ -20,24 +20,17 @@ import com.harsha.cloudcomputing.courseservice.service.ProfessorsService;
 /**
  * ProfessorsResource
  */
+@Path("/professors")
 public class ProfessorsResource {
     ProfessorsService profService = new ProfessorsService();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Professor> getProfessors() {
-        return profService.getAllProfessors();
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Professor> getProfessorsByDeparment(@QueryParam("department") String department) {
-
-        if (department == null) {
-            return profService.getAllProfessors();
+    public List<Professor> getProfessors(@QueryParam("department") String department) {
+        if (department != null) {
+            return profService.getProfessorsByDepartment(department);
         }
-        return profService.getProfessorsByDepartment(department);
-
+        return profService.getAllProfessors();
     }
 
     // ... webapi/professor/1

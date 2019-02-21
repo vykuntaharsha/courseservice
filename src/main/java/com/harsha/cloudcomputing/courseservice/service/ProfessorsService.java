@@ -84,7 +84,7 @@ public class ProfessorsService {
         // Getting the list
         ArrayList<Professor> list = new ArrayList<>();
         for (Professor prof : prof_Map.values()) {
-            if (prof.getDepartment().equals(department)) {
+            if (prof.getDepartment().equalsIgnoreCase(department)) {
                 list.add(prof);
             }
         }
