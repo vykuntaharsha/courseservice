@@ -11,8 +11,6 @@ public class Lecture {
     private Long id;
     private String lectureId;
     private Course course;
-    private List<Object> notes;
-    private List<Object> material;
     private String dateOfLecture;
 
     public Lecture() {
@@ -22,25 +20,21 @@ public class Lecture {
     /**
      * @param lectureId the lectureId to set
      * @param course    the course to set
-     * @param notes     the notes to set
      * @param material  the material to set
      */
-    public Lecture(String lectureId, Course course, List<Object> notes, List<Object> material) {
-        this(lectureId, course, notes, material, new Date().toString());
+    public Lecture(String lectureId, Course course) {
+        this(lectureId, course, new Date().toString());
     }
 
     /**
      * @param lectureId     the lectureId to set
      * @param course        the course to set
-     * @param notes         the notes to set
      * @param material      the material to set
      * @param dateOfLecture the dateOfLecture to set
      */
-    public Lecture(String lectureId, Course course, List<Object> notes, List<Object> material, String dateOfLecture) {
+    public Lecture(String lectureId, Course course, String dateOfLecture) {
         this.lectureId = lectureId;
         this.course = course;
-        this.notes = notes;
-        this.material = material;
         this.dateOfLecture = dateOfLecture;
     }
 
@@ -77,34 +71,6 @@ public class Lecture {
      */
     public Long getId() {
         return id;
-    }
-
-    /**
-     * @return the material
-     */
-    public List<Object> getMaterial() {
-        return material;
-    }
-
-    /**
-     * @param material the material to set
-     */
-    public void setMaterial(List<Object> material) {
-        this.material = material;
-    }
-
-    /**
-     * @return the notes
-     */
-    public List<Object> getNotes() {
-        return notes;
-    }
-
-    /**
-     * @param notes the notes to set
-     */
-    public void setNotes(List<Object> notes) {
-        this.notes = notes;
     }
 
     /**

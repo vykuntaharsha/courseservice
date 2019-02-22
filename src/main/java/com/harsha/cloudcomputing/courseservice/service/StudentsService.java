@@ -74,6 +74,9 @@ public class StudentsService {
      */
     public Student updateStudentInformation(Long id, Student student) {
         Student studentToUpdate = student_Map.get(id);
+        if (studentToUpdate == null) {
+            return null;
+        }
         student.setStudentId(studentToUpdate.getStudentId());
         student_Map.put(id, student);
         return student;
@@ -98,6 +101,9 @@ public class StudentsService {
      */
     public Student enrollStudentToCourse(Long id, Course course) {
         Student studentToEnroll = student_Map.get(id);
+        if (studentToEnroll == null) {
+            return null;
+        }
         studentToEnroll.getCoursesEnrolled().add(course);
         return studentToEnroll;
     }
@@ -110,6 +116,9 @@ public class StudentsService {
      */
     public Student disenrollStudentFromCourse(Long id, Course course) {
         Student studentToDisenroll = student_Map.get(id);
+        if (studentToDisenroll == null) {
+            return null;
+        }
         studentToDisenroll.getCoursesEnrolled().removeIf(c -> c.getId() == course.getId());
         return studentToDisenroll;
     }

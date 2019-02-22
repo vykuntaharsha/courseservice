@@ -46,6 +46,11 @@ public class CoursesService {
         return course_Map.values().stream().filter(c -> c != null).collect(Collectors.toList());
     }
 
+    public List<Course> getCoursesOfProfessor(Long professorId) {
+        return course_Map.values().stream().filter(c -> c != null).filter(c -> c.getProfessor().getId() == professorId)
+                .collect(Collectors.toList());
+    }
+
     /**
      * 
      * @param id to retrieve course
@@ -77,6 +82,9 @@ public class CoursesService {
      */
     public Course updateCourseInformation(Long id, Course course) {
         Course courseToUpdate = course_Map.get(id);
+        if (courseToUpdate == null) {
+            return null;
+        }
         course.setCourseId(courseToUpdate.getCourseId());
         course_Map.put(id, course);
         return course;
@@ -90,6 +98,9 @@ public class CoursesService {
      */
     public Course enrollStudent(Long id, Student student) {
         Course courseToEnroll = course_Map.get(id);
+        if (courseToEnroll == null) {
+            return null;
+        }
         courseToEnroll.getEnrolledStudents().add(student);
         return courseToEnroll;
     }
@@ -101,6 +112,9 @@ public class CoursesService {
      */
     public Course disenrollStudent(Long id, Student student) {
         Course courseToDisenroll = course_Map.get(id);
+        if (courseToDisenroll == null) {
+            return null;
+        }
         courseToDisenroll.getEnrolledStudents().removeIf(s -> s.getId() == student.getId());
         return courseToDisenroll;
     }

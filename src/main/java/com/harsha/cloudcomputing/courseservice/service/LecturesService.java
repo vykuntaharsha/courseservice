@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.harsha.cloudcomputing.courseservice.datamodel.Course;
 import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
 import com.harsha.cloudcomputing.courseservice.datamodel.Lecture;
+import com.harsha.cloudcomputing.courseservice.datamodel.Note;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,6 +24,19 @@ public class LecturesService {
     }
 
     /**
+     * @param lecture to add new lecture
+     * @return newly added lecture
+     */
+    public Lecture addLecture(Lecture lecture) {
+        long nextAvailableId = lecture_Map.size() + 1;
+        String lectureId = "L+" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, "0");
+        lecture.setLectureId(lectureId);
+        lecture.setId(nextAvailableId);
+        lecture_Map.put(nextAvailableId, lecture);
+        return lecture;
+    }
+
+    /**
      * 
      * @param course        to set for the lecture
      * @param dateOfLecture to set date of lecture
@@ -30,9 +44,8 @@ public class LecturesService {
      */
     public Lecture addLecture(Course course, Date dateOfLecture) {
         long nextAvailableId = lecture_Map.size() + 1;
-        String letcureId = "L+" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, "0");
-        Lecture lecture = new Lecture(letcureId, course, new ArrayList<>(), new ArrayList<>(),
-                dateOfLecture.toString());
+        String lectureId = "L+" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, "0");
+        Lecture lecture = new Lecture(lectureId, course, dateOfLecture.toString());
         lecture.setId(nextAvailableId);
         lecture_Map.put(nextAvailableId, lecture);
         return lecture;
@@ -75,7 +88,7 @@ public class LecturesService {
      * @param lecture with updated fields
      * @return updated lecture
      */
-    public Lecture updateLectureAssets(Long id, Lecture lecture) {
+    public Lecture updateLectureInformation(Long id, Lecture lecture) {
         Lecture lectureToUpdate = lecture_Map.get(id);
         lecture.setLectureId(lectureToUpdate.getLectureId());
         lecture.setId(lectureToUpdate.getId());
@@ -83,27 +96,4 @@ public class LecturesService {
         return lecture;
     }
 
-    /**
-     * 
-     * @param id    of lecture to add notes
-     * @param notes to add
-     * @return updated lecture object
-     */
-    public Lecture addNotesToLecture(Long id, Object notes) {
-        Lecture lecture = lecture_Map.get(id);
-        lecture.getNotes().add(notes);
-        return lecture;
-    }
-
-    /**
-     * 
-     * @param id       of lecture to add material
-     * @param material to add
-     * @return updated lecture object
-     */
-    public Lecture addMaterialToLecture(Long id, Object material) {
-        Lecture lecture = lecture_Map.get(id);
-        lecture.getMaterial().add(material);
-        return lecture;
-    }
 }
