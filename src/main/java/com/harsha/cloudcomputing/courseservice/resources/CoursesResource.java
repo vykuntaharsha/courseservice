@@ -46,6 +46,7 @@ public class CoursesResource {
     }
 
     @GET
+    @Path("/{courseId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Course getCourseDetails(@PathParam("courseId") Long id) {
         return coursesService.getCourse(id);
