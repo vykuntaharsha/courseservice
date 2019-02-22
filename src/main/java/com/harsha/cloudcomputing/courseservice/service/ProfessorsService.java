@@ -64,7 +64,7 @@ public class ProfessorsService {
     // Deleting a professor
     public Professor deleteProfessor(Long profId) {
         Professor deletedProfDetails = prof_Map.get(profId);
-        prof_Map.remove(profId);
+        prof_Map.put(profId, null);
         return deletedProfDetails;
     }
 
@@ -72,6 +72,9 @@ public class ProfessorsService {
     public Professor updateProfessorInformation(Long id, Professor prof) {
         Professor oldProfObject = prof_Map.get(id);
 
+        if (oldProfObject == null) {
+            return null;
+        }
         // updating the professor obj
         prof.setProfessorId(oldProfObject.getProfessorId());
         prof.setId(oldProfObject.getId());
@@ -84,7 +87,7 @@ public class ProfessorsService {
         // Getting the list
         ArrayList<Professor> list = new ArrayList<>();
         for (Professor prof : prof_Map.values()) {
-            if (prof.getDepartment().equalsIgnoreCase(department)) {
+            if (prof != null && prof.getDepartment().equalsIgnoreCase(department)) {
                 list.add(prof);
             }
         }
