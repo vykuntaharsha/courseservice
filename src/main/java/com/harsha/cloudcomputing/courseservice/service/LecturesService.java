@@ -1,6 +1,5 @@
 package com.harsha.cloudcomputing.courseservice.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.stream.Collectors;
 import com.harsha.cloudcomputing.courseservice.datamodel.Course;
 import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
 import com.harsha.cloudcomputing.courseservice.datamodel.Lecture;
-import com.harsha.cloudcomputing.courseservice.datamodel.Note;
 
 import org.apache.commons.lang3.StringUtils;
 

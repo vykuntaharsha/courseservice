@@ -25,9 +25,12 @@ import com.harsha.cloudcomputing.courseservice.service.LecturesService;
 import com.harsha.cloudcomputing.courseservice.service.NotesService;
 import com.harsha.cloudcomputing.courseservice.service.StudentsService;
 
+import io.swagger.annotations.Api;
+
 /**
  * CoursesResource
  */
+@Api
 @Path("/courses")
 public class CoursesResource {
 

@@ -20,9 +20,12 @@ import com.harsha.cloudcomputing.courseservice.datamodel.Student;
 import com.harsha.cloudcomputing.courseservice.service.CoursesService;
 import com.harsha.cloudcomputing.courseservice.service.StudentsService;
 
+import io.swagger.annotations.Api;
+
 /**
  * StudentsResource
  */
+@Api
 @Path("/students")
 public class StudentsResource {
 

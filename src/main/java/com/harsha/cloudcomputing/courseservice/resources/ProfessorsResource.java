@@ -17,9 +17,12 @@ import javax.ws.rs.core.MediaType;
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
 import com.harsha.cloudcomputing.courseservice.service.ProfessorsService;
 
+import io.swagger.annotations.Api;
+
 /**
  * ProfessorsResource
  */
+@Api
 @Path("/professors")
 public class ProfessorsResource {
     ProfessorsService profService = new ProfessorsService();
