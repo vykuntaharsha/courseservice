@@ -86,4 +86,15 @@ public class StudentsResource {
         return studentsService.enrollStudentToCourse(studentId, course);
     }
 
+    @DELETE
+    @Path("/{studentId}/courses/{courseId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Student disenrollStudentFromCourse(@PathParam("studentId") Long studentId,
+            @PathParam("courseId") Long courseId) {
+        Student student = studentsService.getStudent(studentId);
+        Course course = coursesService.getCourse(courseId);
+        coursesService.disenrollStudent(courseId, student);
+        return studentsService.disenrollStudentFromCourse(studentId, course);
+    }
+
 }

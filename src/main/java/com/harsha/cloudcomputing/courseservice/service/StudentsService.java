@@ -101,4 +101,17 @@ public class StudentsService {
         studentToEnroll.getCoursesEnrolled().add(course);
         return studentToEnroll;
     }
+
+    /**
+     * 
+     * @param id     of the student to disenroll
+     * @param course for the student to disenroll
+     * @return the disenrolled student object
+     */
+    public Student disenrollStudentFromCourse(Long id, Course course) {
+        Student studentToDisenroll = student_Map.get(id);
+        studentToDisenroll.getCoursesEnrolled().removeIf(c -> c.getId() == course.getId());
+        return studentToDisenroll;
+    }
+
 }

@@ -94,4 +94,15 @@ public class CoursesService {
         return courseToEnroll;
     }
 
+    /**
+     * @param id      of course to disenroll student
+     * @param student object to disenroll
+     * @return updated course object
+     */
+    public Course disenrollStudent(Long id, Student student) {
+        Course courseToDisenroll = course_Map.get(id);
+        courseToDisenroll.getEnrolledStudents().removeIf(s -> s.getId() == student.getId());
+        return courseToDisenroll;
+    }
+
 }
