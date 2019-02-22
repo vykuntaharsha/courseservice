@@ -12,13 +12,13 @@ import com.harsha.cloudcomputing.courseservice.datamodel.Student;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * CourseService
+ * CoursesService
  */
-public class CourseService {
+public class CoursesService {
 
     private static HashMap<Long, Course> course_Map = InMemoryDatabase.getCourseDB();
 
-    public CourseService() {
+    public CoursesService() {
 
     }
 

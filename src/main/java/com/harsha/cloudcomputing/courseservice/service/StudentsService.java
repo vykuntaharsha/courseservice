@@ -11,12 +11,12 @@ import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
 import com.harsha.cloudcomputing.courseservice.datamodel.Student;
 
 /**
- * StudentService
+ * StudentsService
  */
-public class StudentService {
+public class StudentsService {
     private static HashMap<Long, Student> student_Map = InMemoryDatabase.getStudentDB();
 
-    public StudentService() {
+    public StudentsService() {
 
     }
 
