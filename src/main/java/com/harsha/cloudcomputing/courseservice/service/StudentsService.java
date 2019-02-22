@@ -35,13 +35,15 @@ public class StudentsService {
      * @param image       the image of a student to set
      * @param program     the program of a student to set
      * @param joiningDate the joiningDate of a student to set
+     * @return newly created student
      */
-    public void addStudent(String firstName, String lastName, String image, String program, Date joiningDate) {
+    public Student addStudent(String firstName, String lastName, String image, String program, Date joiningDate) {
         long nextAvailableId = student_Map.size() + 1;
         Student student = new Student(firstName + "-" + lastName, firstName, lastName, image, program,
                 new ArrayList<>(), joiningDate.toString());
         student.setId(nextAvailableId);
         student_Map.put(nextAvailableId, student);
+        return student;
     }
 
     /**
