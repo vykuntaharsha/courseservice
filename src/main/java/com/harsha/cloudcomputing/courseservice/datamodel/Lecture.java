@@ -1,7 +1,6 @@
 package com.harsha.cloudcomputing.courseservice.datamodel;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Lecture
