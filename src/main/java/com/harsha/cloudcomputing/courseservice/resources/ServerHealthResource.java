@@ -3,7 +3,6 @@ package com.harsha.cloudcomputing.courseservice.resources;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
