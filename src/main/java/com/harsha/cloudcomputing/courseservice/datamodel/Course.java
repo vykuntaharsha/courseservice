@@ -163,7 +163,6 @@ public class Course {
      */
     @Override
     public String toString() {
-        return "courseId= " + getCourseId() + ", name= " + getName() + ", professor= " + getProfessor().getFirstName()
-                + ", teachingAssistant= " + getTeachingAssistant().getFirstName();
+        return "courseId= " + getCourseId() + ", name= " + getName();
     }
 }
