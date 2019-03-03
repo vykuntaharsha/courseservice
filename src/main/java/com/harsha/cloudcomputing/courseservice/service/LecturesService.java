@@ -27,7 +27,7 @@ public class LecturesService {
      */
     public Lecture addLecture(Lecture lecture) {
         long nextAvailableId = lecture_Map.size() + 1;
-        String lectureId = "L+" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, "0");
+        String lectureId = "L-" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, "0");
         lecture.setLectureId(lectureId);
         lecture.setId(nextAvailableId);
         lecture_Map.put(nextAvailableId, lecture);
@@ -41,12 +41,8 @@ public class LecturesService {
      * @return newly created lecture
      */
     public Lecture addLecture(Course course, Date dateOfLecture) {
-        long nextAvailableId = lecture_Map.size() + 1;
-        String lectureId = "L+" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, "0");
-        Lecture lecture = new Lecture(lectureId, course, dateOfLecture.toString());
-        lecture.setId(nextAvailableId);
-        lecture_Map.put(nextAvailableId, lecture);
-        return lecture;
+        Lecture lecture = new Lecture(null, course, dateOfLecture.toString());
+        return addLecture(lecture);
     }
 
     /**

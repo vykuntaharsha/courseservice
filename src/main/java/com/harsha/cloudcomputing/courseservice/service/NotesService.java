@@ -1,5 +1,6 @@
 package com.harsha.cloudcomputing.courseservice.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,9 @@ public class NotesService {
         String noteId = "N-" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, "0");
         note.setNoteId(noteId);
         note.setId(nextAvailableId);
+        if (note.getTimeStamp() == null) {
+            note.setTimeStamp(LocalDate.now().toString());
+        }
         note_Map.put(nextAvailableId, note);
         return note;
     }
