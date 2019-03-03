@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.harsha.cloudcomputing.courseservice.datamodel.Course;
+import com.harsha.cloudcomputing.courseservice.datamodel.Program;
 import com.harsha.cloudcomputing.courseservice.datamodel.Student;
 import com.harsha.cloudcomputing.courseservice.service.CoursesService;
 import com.harsha.cloudcomputing.courseservice.service.ProgramsService;
@@ -54,9 +55,11 @@ public class StudentsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createStudent(Student student) {
-        if (programsService.findByName(student.getProgram()) == null) {
+        Program program = programsService.findByName(student.getProgram());
+        if ( program == null) {
             return Response.status(400).entity("No program found").build();
         }
+        student.setProgram(program.getName());
         student = studentsService.addStudent(student);
 
         return Response.status(201).entity(student).build();
