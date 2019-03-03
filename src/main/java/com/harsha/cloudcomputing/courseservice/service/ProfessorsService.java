@@ -36,20 +36,17 @@ public class ProfessorsService {
         long nextAvailableId = prof_Map.size() + 1;
 
         // Updating prof id
+        prof.setProfessorId(prof.getFirstName() + "-" + prof.getLastName());
         prof.setId(nextAvailableId);
+        prof.setJoiningDate(LocalDate.now());
         prof_Map.put(nextAvailableId, prof);
         return prof;
     }
 
     // Adding a professor
-    public void addProfessor(String firstName, String lastName, String programId, LocalDate joiningDate) {
-        // Next Id
-        long nextAvailableId = prof_Map.size() + 1;
-
-        // Create a Professor Object
-        Professor prof = new Professor(firstName + lastName, firstName, lastName, programId, joiningDate);
-        prof.setId(nextAvailableId);
-        prof_Map.put(nextAvailableId, prof);
+    public Professor addProfessor(String firstName, String lastName, String programId, LocalDate joiningDate) {
+        Professor prof = new Professor(null, firstName, lastName, programId, joiningDate);
+        return addProfessor(prof);
     }
 
     // Getting One Professor
