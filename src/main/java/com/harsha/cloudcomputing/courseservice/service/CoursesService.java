@@ -23,6 +23,15 @@ public class CoursesService {
 
     }
 
+    public Course addCourse(Course course) {
+        long nextAvailableId = course_Map.size() + 1;
+        String courseId = "C-" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, '0');
+        course.setCourseId(courseId);
+        course.setId(nextAvailableId);
+        course_Map.put(nextAvailableId, course);
+        return course;
+    }
+
     /**
      * 
      * @param name              to set for the course
@@ -32,12 +41,8 @@ public class CoursesService {
      * @return the created course
      */
     public Course addCourse(String name, Professor professor, Student teachingAssistant, long program) {
-        long nextAvailableId = course_Map.size() + 1;
-        String courseId = "C-" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, '0');
-        Course course = new Course(courseId, name, professor, teachingAssistant, program);
-        course.setId(nextAvailableId);
-        course_Map.put(nextAvailableId, course);
-        return course;
+        Course course = new Course(null, name, professor, teachingAssistant, program);
+        return addCourse(course);
     }
 
     /**

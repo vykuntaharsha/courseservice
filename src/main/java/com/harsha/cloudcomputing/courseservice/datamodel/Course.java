@@ -3,18 +3,24 @@ package com.harsha.cloudcomputing.courseservice.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Course
  */
 public class Course {
 
+    @JsonIgnore
     private Long id;
     private String name;
+    @JsonIgnore
     private String courseId;
     private Student teachingAssistant;
     private Professor professor;
     private long programId;
-    private List<Student> enrolledStudents;
+    @JsonIgnore
+    private List<Student> enrolledStudents = new ArrayList<>();
 
     public Course() {
 
@@ -38,6 +44,7 @@ public class Course {
     /**
      * @return the id
      */
+    @JsonProperty
     public Long getId() {
         return id;
     }
@@ -87,10 +94,15 @@ public class Course {
     /**
      * @return the roster
      */
+    @JsonProperty
     public List<Object> getRoster() {
         List<Object> roster = new ArrayList<>(enrolledStudents);
-        roster.add(professor);
-        roster.add(teachingAssistant);
+        if (professor != null) {
+            roster.add(professor);
+        }
+        if (teachingAssistant != null) {
+            roster.add(teachingAssistant);
+        }
         return roster;
     }
 
@@ -111,6 +123,7 @@ public class Course {
     /**
      * @return the courseId
      */
+    @JsonProperty
     public String getCourseId() {
         return courseId;
     }
@@ -118,6 +131,7 @@ public class Course {
     /**
      * @param courseId the courseId to set
      */
+    @JsonIgnore
     public void setCourseId(String courseId) {
         this.courseId = courseId;
     }
@@ -139,6 +153,7 @@ public class Course {
     /**
      * @param id the id to set
      */
+    @JsonIgnore
     public void setId(Long id) {
         this.id = id;
     }
