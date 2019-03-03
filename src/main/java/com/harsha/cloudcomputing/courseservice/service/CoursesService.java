@@ -3,6 +3,7 @@ package com.harsha.cloudcomputing.courseservice.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.harsha.cloudcomputing.courseservice.datamodel.Course;
 import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
@@ -30,10 +31,10 @@ public class CoursesService {
      * @param teachingAssistant to set for the course
      * @return the created course
      */
-    public Course addCourse(String name, String board, Professor professor, Student teachingAssistant) {
+    public Course addCourse(String name, Professor professor, Student teachingAssistant, long program) {
         long nextAvailableId = course_Map.size() + 1;
         String courseId = "C-" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, '0');
-        Course course = new Course(courseId, name, board, professor, teachingAssistant);
+        Course course = new Course(courseId, name, professor, teachingAssistant, program);
         course.setId(nextAvailableId);
         course_Map.put(nextAvailableId, course);
         return course;
@@ -117,6 +118,14 @@ public class CoursesService {
         }
         courseToDisenroll.getEnrolledStudents().removeIf(s -> s.getId() == student.getId());
         return courseToDisenroll;
+    }
+
+    public Stream<Course> getCourseStream() {
+        return course_Map.values().stream().filter(c -> c != null);
+    }
+
+    public List<Course> getCoursesOfProgram(long programId) {
+        return getCourseStream().filter(c -> c.getProgramId() == programId).collect(Collectors.toList());
     }
 
 }

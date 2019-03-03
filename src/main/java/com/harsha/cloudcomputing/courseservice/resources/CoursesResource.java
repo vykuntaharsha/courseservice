@@ -59,8 +59,8 @@ public class CoursesResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Course createCourse(Course course) {
-        return coursesService.addCourse(course.getName(), course.getBoard(), course.getProfessor(),
-                course.getTeachingAssistant());
+        return coursesService.addCourse(course.getName(), course.getProfessor(), course.getTeachingAssistant(),
+                course.getProgramId());
     }
 
     @PUT

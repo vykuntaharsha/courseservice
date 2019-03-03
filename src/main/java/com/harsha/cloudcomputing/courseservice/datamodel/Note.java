@@ -1,15 +1,21 @@
 package com.harsha.cloudcomputing.courseservice.datamodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Note
  */
 public class Note {
+    @JsonIgnore
     private Long id;
+    @JsonIgnore
     private String noteId;
     private String title;
     private String description;
     private String documentLink;
     private Lecture lecture;
+    @JsonIgnore
     private String timeStamp;
 
     public Note() {
@@ -80,6 +86,7 @@ public class Note {
     /**
      * @return the id
      */
+    @JsonProperty
     public Long getId() {
         return id;
     }
@@ -87,6 +94,7 @@ public class Note {
     /**
      * @param id the id to set
      */
+    @JsonIgnore
     public void setId(Long id) {
         this.id = id;
     }
@@ -94,6 +102,7 @@ public class Note {
     /**
      * @return the noteId
      */
+    @JsonProperty
     public String getNoteId() {
         return noteId;
     }
@@ -101,6 +110,7 @@ public class Note {
     /**
      * @param noteId the noteId to set
      */
+    @JsonIgnore
     public void setNoteId(String noteId) {
         this.noteId = noteId;
     }
@@ -108,6 +118,7 @@ public class Note {
     /**
      * @return the timeStamp
      */
+    @JsonProperty
     public String getTimeStamp() {
         return timeStamp;
     }
@@ -115,6 +126,7 @@ public class Note {
     /**
      * @param timeStamp the timeStamp to set
      */
+    @JsonIgnore
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }

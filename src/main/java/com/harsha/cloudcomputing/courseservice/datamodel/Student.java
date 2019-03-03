@@ -1,21 +1,31 @@
 package com.harsha.cloudcomputing.courseservice.datamodel;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Student
  */
 public class Student {
+    @JsonIgnore
     private Long id;
     private String firstName;
     private String lastName;
+
+    @JsonIgnore
     private String studentId;
     private String image;
     private String program;
-    private List<Course> coursesEnrolled;
-    private String joiningDate;
+
+    @JsonIgnore
+    private List<Course> coursesEnrolled = new ArrayList<>();
+
+    @JsonIgnore
+    private LocalDate joiningDate;
 
     public Student() {
 
@@ -32,37 +42,40 @@ public class Student {
      * @param joiningDate     the joiningDate to set
      */
     public Student(String studentId, String firstName, String lastName, String image, String program,
-            List<Course> coursesEnrolled, String joiningDate) {
+            List<Course> coursesEnrolled, LocalDate joiningDate) {
+        this(studentId, firstName, lastName, image, program);
+        this.coursesEnrolled = coursesEnrolled;
+        this.joiningDate = joiningDate;
+    }
+
+    public Student(String studentId, String firstName, String lastName, String image, String program) {
         this.studentId = studentId;
         this.firstName = firstName;
         this.studentId = studentId;
         this.image = image;
         this.program = program;
-        this.coursesEnrolled = coursesEnrolled;
-        this.joiningDate = joiningDate;
-    }
-
-    /**
-     * @param studentId the studentId to set
-     * @param firstName the firstName to set
-     * @param lastName  the lastName to set
-     * @param image     the image to set
-     * @param program   the program to set
-     */
-    public Student(String studentId, String firstName, String lastName, String image, String program) {
-        this(studentId, firstName, lastName, image, program, new ArrayList<Course>(), new Date().toString());
     }
 
     /**
      * @return the id
      */
+    @JsonProperty
     public Long getId() {
         return id;
     }
 
     /**
+     * @param id the id to set
+     */
+    @JsonIgnore
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
      * @return the coursesEnrolled
      */
+    @JsonProperty
     public List<Course> getCoursesEnrolled() {
         return coursesEnrolled;
     }
@@ -70,6 +83,7 @@ public class Student {
     /**
      * @param coursesEnrolled the coursesEnrolled to set
      */
+    @JsonIgnore
     public void setCoursesEnrolled(List<Course> coursesEnrolled) {
         this.coursesEnrolled = coursesEnrolled;
     }
@@ -105,6 +119,7 @@ public class Student {
     /**
      * @return the studentId
      */
+    @JsonProperty
     public String getStudentId() {
         return studentId;
     }
@@ -112,6 +127,7 @@ public class Student {
     /**
      * @param studentId the studentId to set
      */
+    @JsonIgnore
     public void setStudentId(String studentId) {
         this.studentId = studentId;
     }
@@ -145,23 +161,18 @@ public class Student {
     }
 
     /**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
      * @return the joiningDate
      */
-    public String getJoiningDate() {
+    @JsonProperty
+    public LocalDate getJoiningDate() {
         return joiningDate;
     }
 
     /**
      * @param joiningDate the joiningDate to set
      */
-    public void setJoiningDate(String joiningDate) {
+    @JsonIgnore
+    public void setJoiningDate(LocalDate joiningDate) {
         this.joiningDate = joiningDate;
     }
 

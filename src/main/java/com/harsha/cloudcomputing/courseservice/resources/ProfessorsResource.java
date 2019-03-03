@@ -1,7 +1,7 @@
 package com.harsha.cloudcomputing.courseservice.resources;
 
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -13,9 +13,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
+import com.harsha.cloudcomputing.courseservice.datamodel.Program;
 import com.harsha.cloudcomputing.courseservice.service.ProfessorsService;
+import com.harsha.cloudcomputing.courseservice.service.ProgramsService;
 
 import io.swagger.annotations.Api;
 
@@ -26,14 +29,28 @@ import io.swagger.annotations.Api;
 @Path("/professors")
 public class ProfessorsResource {
     ProfessorsService profService = new ProfessorsService();
+    ProgramsService programService = new ProgramsService();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Professor> getProfessors(@QueryParam("department") String department) {
-        if (department != null) {
-            return profService.getProfessorsByDepartment(department);
+    public List<Professor> getProfessors(@QueryParam("program") String program, @QueryParam("joinedYear") Integer year,
+            @QueryParam("limit") Integer limit) {
+
+        Stream<Professor> professorStream = profService.getProfessorStream();
+
+        if (program != null) {
+            professorStream = profService.filterBy(professorStream, program);
         }
-        return profService.getAllProfessors();
+
+        if (year != null) {
+            professorStream = profService.filterBy(professorStream, year);
+        }
+
+        if (limit == null) {
+            limit = 0;
+        }
+
+        return profService.limitProfessors(professorStream, limit);
     }
 
     // ... webapi/professor/1
@@ -55,11 +72,15 @@ public class ProfessorsResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Professor addProfessor(Professor prof) {
-        prof.setProfessorId(prof.getFirstName() + prof.getLastName());
-        prof.setJoiningDate(new Date().toString());
-        // prof.setId(prof.getProfessorId());
-        return profService.addProfessor(prof);
+    public Response addProfessor(Professor professor) {
+        String programName = professor.getProgram();
+        Program program = programService.findByName(programName);
+        if (program == null) {
+            return Response.status(400).entity("No such program available").build();
+        }
+        professor = profService.addProfessor(professor);
+
+        return Response.status(201).entity(professor).build();
     }
 
     @PUT

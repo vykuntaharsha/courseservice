@@ -2,12 +2,17 @@ package com.harsha.cloudcomputing.courseservice.datamodel;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Lecture
  */
 public class Lecture {
 
+    @JsonIgnore
     private Long id;
+    @JsonIgnore
     private String lectureId;
     private Course course;
     private String dateOfLecture;
@@ -40,6 +45,7 @@ public class Lecture {
     /**
      * @return the lectureId
      */
+    @JsonProperty
     public String getLectureId() {
         return this.lectureId;
     }
@@ -47,6 +53,7 @@ public class Lecture {
     /**
      * @param lectureId the lectureId to set
      */
+    @JsonIgnore
     public void setLectureId(String lectureId) {
         this.lectureId = lectureId;
     }
@@ -68,6 +75,7 @@ public class Lecture {
     /**
      * @return the id
      */
+    @JsonProperty
     public Long getId() {
         return id;
     }
@@ -75,6 +83,7 @@ public class Lecture {
     /**
      * @param id the id to set
      */
+    @JsonIgnore
     public void setId(Long id) {
         this.id = id;
     }

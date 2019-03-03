@@ -11,12 +11,20 @@ public class InMemoryDatabase {
     private static HashMap<Long, Course> courseDB = new HashMap<>();
     private static HashMap<Long, Lecture> lectureDB = new HashMap<>();
     private static HashMap<Long, Note> noteDB = new HashMap<>();
+    private static HashMap<Long, Program> programDB = new HashMap<>();
 
     /**
      * @return the professorDB
      */
     public static HashMap<Long, Professor> getProfessorDB() {
         return professorDB;
+    }
+
+    /**
+     * @return the programDB
+     */
+    public static HashMap<Long, Program> getProgramDB() {
+        return programDB;
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.harsha.cloudcomputing.courseservice.service;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +26,15 @@ public class StudentsService {
         return student_Map.values().stream().filter(s -> s != null).collect(Collectors.toList());
     }
 
+    public Student addStudent(Student student) {
+        long nextAvailableId = student_Map.size() + 1;
+        student.setStudentId(student.getLastName() + "-" + student.getFirstName());
+        student.setJoiningDate(LocalDate.now());
+        student.setId(nextAvailableId);
+        student_Map.put(nextAvailableId, student);
+        return student;
+    }
+
     /**
      * Adding a student
      * 
@@ -37,13 +45,10 @@ public class StudentsService {
      * @param joiningDate the joiningDate of a student to set
      * @return newly created student
      */
-    public Student addStudent(String firstName, String lastName, String image, String program, Date joiningDate) {
-        long nextAvailableId = student_Map.size() + 1;
-        Student student = new Student(firstName + "-" + lastName, firstName, lastName, image, program,
-                new ArrayList<>(), joiningDate.toString());
-        student.setId(nextAvailableId);
-        student_Map.put(nextAvailableId, student);
-        return student;
+    public Student addStudent(String firstName, String lastName, String image, String program) {
+
+        Student student = new Student(firstName + "-" + lastName, firstName, lastName, image, program);
+        return addStudent(student);
     }
 
     /**

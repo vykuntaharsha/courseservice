@@ -11,11 +11,10 @@ public class Course {
     private Long id;
     private String name;
     private String courseId;
-    private String board;
-    private List<Object> roster;
-    private List<Student> enrolledStudents;
     private Student teachingAssistant;
     private Professor professor;
+    private long programId;
+    private List<Student> enrolledStudents;
 
     public Course() {
 
@@ -24,32 +23,16 @@ public class Course {
     /**
      * @param courseId          the courseId to set
      * @param name              the name to set
-     * @param board             the board to set
      * @param professor         the professor to set
      * @param teachingAssistant the teachingAssistant to set
-     * @param roster            the roster to set
-     * @param enrolledStudents  the enrolledStudents to set
+     * @param program           the program to set
      */
-    public Course(String courseId, String name, String board, Professor professor, Student teachingAssistant,
-            List<Object> roster, List<Student> enrolledStudents) {
+    public Course(String courseId, String name, Professor professor, Student teachingAssistant, long programId) {
         this.courseId = courseId;
         this.name = name;
-        this.board = board;
-        this.roster = roster;
-        this.enrolledStudents = enrolledStudents;
         this.teachingAssistant = teachingAssistant;
         this.professor = professor;
-    }
-
-    /**
-     * @param courseId          the courseId to set
-     * @param name              the name to set
-     * @param board             the board to set
-     * @param professor         the professor to set
-     * @param teachingAssistant the teachingAssistant to set
-     */
-    public Course(String courseId, String name, String board, Professor professor, Student teachingAssistant) {
-        this(courseId, name, board, professor, teachingAssistant, new ArrayList<>(), new ArrayList<>());
+        this.programId = programId;
     }
 
     /**
@@ -91,7 +74,7 @@ public class Course {
      * @return the enrolledStudents
      */
     public List<Student> getEnrolledStudents() {
-        return enrolledStudents;
+        return this.getEnrolledStudents();
     }
 
     /**
@@ -105,28 +88,24 @@ public class Course {
      * @return the roster
      */
     public List<Object> getRoster() {
+        List<Object> roster = new ArrayList<>(enrolledStudents);
+        roster.add(professor);
+        roster.add(teachingAssistant);
         return roster;
     }
 
     /**
-     * @param roster the roster to set
+     * @return the program
      */
-    public void setRoster(List<Object> roster) {
-        this.roster = roster;
+    public long getProgramId() {
+        return programId;
     }
 
     /**
-     * @return the board
+     * @param program the program to set
      */
-    public String getBoard() {
-        return board;
-    }
-
-    /**
-     * @param board the board to set
-     */
-    public void setBoard(String board) {
-        this.board = board;
+    public void setProgramId(long program) {
+        this.programId = program;
     }
 
     /**
