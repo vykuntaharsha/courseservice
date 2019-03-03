@@ -35,6 +35,13 @@ public class ProgramsResource {
         return programsService.getAllPrograms();
     }
 
+    @GET
+    @Path("/{programId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Program getProgram(@PathParam("programId") long id) {
+        return programsService.getProgram(id);
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
