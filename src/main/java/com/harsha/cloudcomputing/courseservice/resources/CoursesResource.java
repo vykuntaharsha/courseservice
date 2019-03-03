@@ -98,7 +98,7 @@ public class CoursesResource {
     }
 
     @DELETE
-    @Path("/{courseId}/students/{courseId}")
+    @Path("/{courseId}/students/{studentId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Course disenrollStudentToCourse(@PathParam("courseId") Long courseId,
             @PathParam("studentId") Long studentId) {
