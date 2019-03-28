@@ -24,7 +24,7 @@
                 <version>2.2</version>
                 <configuration>
                     <path>/</path>
-                    <port>8000</port>
+                    <port>8080</port>
                     <contextReloadable>true</contextReloadable>
                 </configuration>
             </plugin>
@@ -83,6 +83,18 @@
             <groupId>com.jcabi</groupId>
             <artifactId>jcabi-log</artifactId>
             <version>0.18</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-dynamodb</artifactId>
+            <version>1.11.297</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <properties>
