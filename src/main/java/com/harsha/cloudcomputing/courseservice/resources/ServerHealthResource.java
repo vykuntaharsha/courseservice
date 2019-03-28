@@ -3,14 +3,11 @@ package com.harsha.cloudcomputing.courseservice.resources;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import com.jcabi.log.Logger;
-
+import org.apache.log4j.Logger;
 import io.swagger.annotations.Api;
 
 /**
@@ -20,9 +17,11 @@ import io.swagger.annotations.Api;
 @Path("/health")
 public class ServerHealthResource {
 
+    private static Logger log = Logger.getLogger(ServerHealthResource.class);
+
     /**
-     * Method handling HTTP GET requests. The returned object will be sent to the
-     * client as "text/plain" media type.
+     * Method handling HTTP GET requests. The returned object will be sent to the client as
+     * "text/plain" media type.
      *
      * @return String that will be returned as a text/plain response.
      */
@@ -34,7 +33,7 @@ public class ServerHealthResource {
         Map<String, String> resultObj = new HashMap<>();
         resultObj.put("status", "good");
         resultObj.put("serverTime", new Date().toString());
-        Logger.info(this, resultObj.toString());
+        log.info(resultObj.toString());
 
         return resultObj;
     }

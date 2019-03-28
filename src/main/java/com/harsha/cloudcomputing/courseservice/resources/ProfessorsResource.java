@@ -1,8 +1,6 @@
 package com.harsha.cloudcomputing.courseservice.resources;
 
 import java.util.List;
-import java.util.stream.Stream;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,12 +12,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
 import com.harsha.cloudcomputing.courseservice.datamodel.Program;
 import com.harsha.cloudcomputing.courseservice.service.ProfessorsService;
 import com.harsha.cloudcomputing.courseservice.service.ProgramsService;
-
 import io.swagger.annotations.Api;
 
 /**
@@ -33,31 +29,17 @@ public class ProfessorsResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Professor> getProfessors(@QueryParam("program") String program, @QueryParam("joinedYear") Integer year,
-            @QueryParam("limit") Integer limit) {
+    public List<Professor> getProfessors(@QueryParam("program") String program,
+            @QueryParam("joinedYear") Integer year, @QueryParam("limit") Integer limit) {
 
-        Stream<Professor> professorStream = profService.getProfessorStream();
-
-        if (program != null) {
-            professorStream = profService.filterBy(professorStream, program);
-        }
-
-        if (year != null) {
-            professorStream = profService.filterBy(professorStream, year);
-        }
-
-        if (limit == null) {
-            limit = 0;
-        }
-
-        return profService.limitProfessors(professorStream, limit);
+        return profService.getAllProfessors();
     }
 
     // ... webapi/professor/1
     @GET
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Professor getProfessor(@PathParam("professorId") long profId) {
+    public Professor getProfessor(@PathParam("professorId") String profId) {
         System.out.println("Professor Resource: Looking for: " + profId);
         return profService.getProfessor(profId);
     }

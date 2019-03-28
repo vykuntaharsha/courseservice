@@ -52,7 +52,7 @@ public class CoursesService {
         return course_Map.values().stream().filter(c -> c != null).collect(Collectors.toList());
     }
 
-    public List<Course> getCoursesOfProfessor(Long professorId) {
+    public List<Course> getCoursesOfProfessor(String professorId) {
         return course_Map.values().stream().filter(c -> c != null).filter(c -> c.getProfessor().getId() == professorId)
                 .collect(Collectors.toList());
     }

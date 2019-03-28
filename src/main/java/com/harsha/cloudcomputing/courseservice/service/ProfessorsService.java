@@ -1,12 +1,17 @@
 package com.harsha.cloudcomputing.courseservice.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.harsha.cloudcomputing.courseservice.datamodel.DynamoDBConnector;
 import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
 
@@ -16,48 +21,54 @@ import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
 public class ProfessorsService {
     static HashMap<Long, Professor> prof_Map = InMemoryDatabase.getProfessorDB();
 
+    AmazonDynamoDB dynamoDB;
+    DynamoDBMapper mapper;
+
     public ProfessorsService() {
+        DynamoDBConnector.init();
+        mapper = new DynamoDBMapper(new DynamoDBConnector().getClient());
     }
 
     // Getting a list of all professor
     // GET "..webapi/professors"
     public List<Professor> getAllProfessors() {
         // Getting the list
-        ArrayList<Professor> list = new ArrayList<>();
-        for (Professor prof : prof_Map.values()) {
-            list.add(prof);
-        }
-        return list;
+        PaginatedScanList<Professor> scanList =
+                mapper.scan(Professor.class, new DynamoDBScanExpression());
+        scanList.loadAllResults();
+        return scanList;
+    }
+
+    public List<Professor> getProfessors(Map<String, AttributeValue> lastEvaluatedKey,
+            Integer limit) {
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression().withLimit(limit)
+                .withExclusiveStartKey(lastEvaluatedKey);
+
+        PaginatedScanList<Professor> scanList = mapper.scan(Professor.class, scanExpression);
+        return scanList;
     }
 
     // Adding a professor
     public Professor addProfessor(Professor prof) {
-        // Next Id
-        long nextAvailableId = prof_Map.size() + 1;
-
         // Updating prof id
         prof.setProfessorId(prof.getFirstName() + "-" + prof.getLastName());
-        prof.setId(nextAvailableId);
-        prof.setJoiningDate(LocalDate.now());
-        prof_Map.put(nextAvailableId, prof);
+        prof.setJoiningDate(LocalDate.now().toString());
+        mapper.save(prof);
         return prof;
     }
 
     // Adding a professor
-    public Professor addProfessor(String firstName, String lastName, String programId, LocalDate joiningDate) {
-        Professor prof = new Professor(null, firstName, lastName, programId, joiningDate);
+    public Professor addProfessor(String firstName, String lastName, String programId) {
+        Professor prof =
+                new Professor(null, firstName, lastName, programId, LocalDate.now().toString());
         return addProfessor(prof);
     }
 
     // Getting One Professor
-    public Professor getProfessor(Long profId) {
+    public Professor getProfessor(String professorId) {
+        Professor prof = null;
 
-        // Simple HashKey Load
-        Professor prof2 = prof_Map.get(profId);
-        System.out.println("Item retrieved:");
-        System.out.println(prof2.toString());
-
-        return prof2;
+        return prof;
     }
 
     // Deleting a professor
@@ -90,7 +101,7 @@ public class ProfessorsService {
     }
 
     public Stream<Professor> filterBy(Stream<Professor> professorStream, int year) {
-        return professorStream.filter(p -> p.getJoiningDate().getYear() == year);
+        return professorStream.filter(p -> LocalDate.parse(p.getJoiningDate()).getYear() == year);
     }
 
     /**

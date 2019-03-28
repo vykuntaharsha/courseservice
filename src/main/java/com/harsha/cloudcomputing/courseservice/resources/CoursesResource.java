@@ -41,7 +41,7 @@ public class CoursesResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Course> getCourses(@QueryParam("professorId") Long professorId) {
+    public List<Course> getCourses(@QueryParam("professorId") String professorId) {
         if (professorId != null) {
             return coursesService.getCoursesOfProfessor(professorId);
         }
