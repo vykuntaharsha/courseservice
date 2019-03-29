@@ -31,7 +31,6 @@ public class ProfessorsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<Professor> getProfessors(@QueryParam("program") String program,
             @QueryParam("joinedYear") Integer year, @QueryParam("limit") Integer limit) {
-
         return profService.getAllProfessors();
     }
 
@@ -40,14 +39,13 @@ public class ProfessorsResource {
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Professor getProfessor(@PathParam("professorId") String profId) {
-        System.out.println("Professor Resource: Looking for: " + profId);
         return profService.getProfessor(profId);
     }
 
     @DELETE
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Professor deleteProfessor(@PathParam("professorId") long profId) {
+    public Professor deleteProfessor(@PathParam("professorId") String profId) {
         return profService.deleteProfessor(profId);
     }
 
