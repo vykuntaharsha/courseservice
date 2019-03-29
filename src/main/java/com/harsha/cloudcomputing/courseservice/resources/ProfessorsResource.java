@@ -39,7 +39,7 @@ public class ProfessorsResource {
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Professor getProfessor(@PathParam("professorId") String profId) {
-        return profService.getProfessor(profId);
+        return profService.getProfessor(profId, true);
     }
 
     @DELETE

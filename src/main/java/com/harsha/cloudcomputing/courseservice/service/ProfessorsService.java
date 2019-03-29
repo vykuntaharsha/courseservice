@@ -65,7 +65,7 @@ public class ProfessorsService {
     }
 
     // Getting One Professor
-    public Professor getProfessor(String id) {
+    public Professor getProfessor(String id, Boolean... matchForSortKey) {
         // querying for matching partition key first
         Professor prof = mapper.load(Professor.class, id);
 
@@ -73,21 +73,23 @@ public class ProfessorsService {
             return prof;
         }
 
-        // querying for matching sort key professorId
-        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-        eav.put(":id", new AttributeValue().withS(id));
+        if (matchForSortKey.length > 0 && matchForSortKey[0]) {
+            // querying for matching sort key professorId
+            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            eav.put(":id", new AttributeValue().withS(id));
 
-        DynamoDBScanExpression expression =
-                new DynamoDBScanExpression().withFilterExpression("professorId = :id")
-                        .withExpressionAttributeValues(eav).withLimit(1);
+            DynamoDBScanExpression expression =
+                    new DynamoDBScanExpression().withFilterExpression("professorId = :id")
+                            .withExpressionAttributeValues(eav).withLimit(1);
 
-        List<Professor> professors = mapper.scan(Professor.class, expression);
-
-        try {
-            return professors.get(0);
-        } catch (IndexOutOfBoundsException e) {
-            return null;
+            List<Professor> professors = mapper.scan(Professor.class, expression);
+            try {
+                return professors.get(0);
+            } catch (IndexOutOfBoundsException e) {
+                return null;
+            }
         }
+        return null;
     }
 
     // Deleting a professor
