@@ -1,24 +1,27 @@
 package com.harsha.cloudcomputing.courseservice.service;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.harsha.cloudcomputing.courseservice.datamodel.DynamoDBConnector;
 import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
+import org.apache.log4j.Logger;
 
 /**
  * ProfessorsService
  */
 public class ProfessorsService {
+    private static Logger log = Logger.getLogger(ProfessorsService.class);
     static HashMap<Long, Professor> prof_Map = InMemoryDatabase.getProfessorDB();
 
     AmazonDynamoDB dynamoDB;
@@ -52,7 +55,8 @@ public class ProfessorsService {
     public Professor addProfessor(Professor prof) {
         // Updating prof id
         prof.setProfessorId(prof.getFirstName() + "-" + prof.getLastName());
-        prof.setJoiningDate(LocalDate.now().toString());
+
+        prof.setJoiningDate(getCurrentUTCTimeString());
         mapper.save(prof);
         return prof;
     }
@@ -60,34 +64,41 @@ public class ProfessorsService {
     // Adding a professor
     public Professor addProfessor(String firstName, String lastName, String programId) {
         Professor prof =
-                new Professor(null, firstName, lastName, programId, LocalDate.now().toString());
+                new Professor(null, firstName, lastName, programId, Instant.now().toString());
         return addProfessor(prof);
     }
 
-    // Getting One Professor
-    public Professor getProfessor(String id, Boolean... matchForSortKey) {
-        // querying for matching partition key first
-        Professor prof = mapper.load(Professor.class, id);
-
-        if (prof != null) {
-            return prof;
+    public Professor getProfessor(String id) {
+        Professor prof = new Professor();
+        prof.setId(id);
+        DynamoDBQueryExpression<Professor> queryExpression =
+                new DynamoDBQueryExpression<Professor>().withHashKeyValues(prof).withLimit(1);
+        List<Professor> professors = mapper.query(Professor.class, queryExpression);
+        try {
+            return professors.get(0);
+        } catch (IndexOutOfBoundsException e) {
+            // pass
         }
+        return null;
+    }
 
-        if (matchForSortKey.length > 0 && matchForSortKey[0]) {
-            // querying for matching sort key professorId
-            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-            eav.put(":id", new AttributeValue().withS(id));
+    // Getting One Professor
+    public Professor getProfessorWithProfessorId(String professorId) {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":id", new AttributeValue().withS(professorId));
 
-            DynamoDBScanExpression expression =
-                    new DynamoDBScanExpression().withFilterExpression("professorId = :id")
-                            .withExpressionAttributeValues(eav).withLimit(1);
+        DynamoDBQueryExpression<Professor> queryExpression =
+                new DynamoDBQueryExpression<Professor>().withIndexName("professorId-index")
+                        .withKeyConditionExpression("professorId = :id")
+                        .withExpressionAttributeValues(eav).withConsistentRead(false).withLimit(1);
 
-            List<Professor> professors = mapper.scan(Professor.class, expression);
-            try {
-                return professors.get(0);
-            } catch (IndexOutOfBoundsException e) {
-                return null;
-            }
+        List<Professor> professors = mapper.query(Professor.class, queryExpression);
+        try {
+            Professor prof = professors.get(0);
+            prof = getProfessor(prof.getId());
+            return prof;
+        } catch (IndexOutOfBoundsException e) {
+            // pass
         }
         return null;
     }
@@ -102,47 +113,50 @@ public class ProfessorsService {
     }
 
     // Updating Professor Info
-    public Professor updateProfessorInformation(Long id, Professor prof) {
-        Professor oldProfObject = prof_Map.get(id);
+    public Professor updateProfessorInformation(String id, Professor prof) {
+        Professor oldProfObject = getProfessor(id);
 
-        if (oldProfObject == null) {
-            return null;
+        if (oldProfObject != null) {
+            prof.setId(id);
+            prof.setProfessorId(oldProfObject.getProfessorId());
+            if (prof.getJoiningDate() == null) {
+                prof.setJoiningDate(oldProfObject.getJoiningDate());
+            }
+            mapper.save(prof);
         }
-        // updating the professor obj
-        prof.setProfessorId(oldProfObject.getProfessorId());
-        prof.setId(oldProfObject.getId());
-        prof_Map.put(id, prof);
+
         return prof;
     }
 
-    public Stream<Professor> getProfessorStream() {
-        return prof_Map.values().stream().filter(p -> p != null);
+    public List<Professor> getProfessorsWith(String program, Integer year) {
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        PaginatedScanList<Professor> professors = mapper.scan(Professor.class, scanExpression);
+        professors.loadAllResults();
+        return professors;
     }
 
-    public Stream<Professor> filterBy(Stream<Professor> professorStream, String program) {
-        return professorStream.filter(p -> p.getProgram().equalsIgnoreCase(program));
+    public List<Professor> getProfessorsOfProgram(String program) {
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        return null;
     }
 
-    public Stream<Professor> filterBy(Stream<Professor> professorStream, int year) {
-        return professorStream.filter(p -> LocalDate.parse(p.getJoiningDate()).getYear() == year);
+    public List<Professor> getProfessorsJoinedInYear(Integer year) {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":year", new AttributeValue().withS(year.toString()));
+        log.info("Fetching professors with joining year: " + year);
+
+        final DynamoDBScanExpression scanExpression =
+                new DynamoDBScanExpression().withFilterExpression("begins_with(joiningDate, :year)")
+                        .withExpressionAttributeValues(eav);
+
+        List<Professor> professors = mapper.scan(Professor.class, scanExpression);
+
+        log.info("Total results found: " + professors.size());
+        return professors;
     }
 
-    /**
-     * @param program name or program Id to match
-     * @return list of professors with matching program
-     */
-    public Stream<Professor> getProfessorsByProgram(String program) {
-        return this.filterBy(this.getProfessorStream(), program);
-    }
-
-    public Stream<Professor> getProfessorsJoinedInYear(int year) {
-        return this.filterBy(this.getProfessorStream(), year);
-    }
-
-    public List<Professor> limitProfessors(Stream<Professor> professorStream, int maxSize) {
-        if (maxSize != 0) {
-            professorStream = professorStream.limit(maxSize);
-        }
-        return professorStream.collect(Collectors.toList());
+    private String getCurrentUTCTimeString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        return Instant.now().atZone(ZoneOffset.UTC).format(formatter);
     }
 }

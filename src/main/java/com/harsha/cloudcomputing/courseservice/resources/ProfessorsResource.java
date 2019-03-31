@@ -11,11 +11,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
-import com.harsha.cloudcomputing.courseservice.datamodel.Program;
 import com.harsha.cloudcomputing.courseservice.service.ProfessorsService;
-import com.harsha.cloudcomputing.courseservice.service.ProgramsService;
+import org.apache.log4j.Logger;
 import io.swagger.annotations.Api;
 
 /**
@@ -25,12 +23,23 @@ import io.swagger.annotations.Api;
 @Path("/professors")
 public class ProfessorsResource {
     ProfessorsService profService = new ProfessorsService();
-    ProgramsService programService = new ProgramsService();
+    private static Logger log = Logger.getLogger(ProfessorsResource.class);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Professor> getProfessors(@QueryParam("program") String program,
-            @QueryParam("joinedYear") Integer year, @QueryParam("limit") Integer limit) {
+            @QueryParam("joinedYear") Integer year) {
+        log.info(
+                "Get request received for professors with program: " + program + ", year: " + year);
+        if (program != null && year != null) {
+            return profService.getProfessorsWith(program, year);
+        } else if (program != null && year == null) {
+            return profService.getProfessorsOfProgram(program);
+        } else if (program == null && year != null) {
+            log.info("Get professors for year: " + year);
+            return profService.getProfessorsJoinedInYear(year);
+        }
+
         return profService.getAllProfessors();
     }
 
@@ -39,7 +48,11 @@ public class ProfessorsResource {
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Professor getProfessor(@PathParam("professorId") String profId) {
-        return profService.getProfessor(profId, true);
+        Professor prof = profService.getProfessor(profId);
+        if (prof == null) {
+            prof = profService.getProfessorWithProfessorId(profId);
+        }
+        return prof;
     }
 
     @DELETE
@@ -52,22 +65,15 @@ public class ProfessorsResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addProfessor(Professor professor) {
-        String programName = professor.getProgram();
-        Program program = programService.findByName(programName);
-        if (program == null) {
-            return Response.status(400).entity("No such program available").build();
-        }
-        professor = profService.addProfessor(professor);
-
-        return Response.status(201).entity(professor).build();
+    public Professor addProfessor(Professor professor) {
+        return profService.addProfessor(professor);
     }
 
     @PUT
     @Path("/{professorId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Professor updateProfessor(@PathParam("professorId") long profId, Professor prof) {
+    public Professor updateProfessor(@PathParam("professorId") String profId, Professor prof) {
         return profService.updateProfessorInformation(profId, prof);
     }
 }
