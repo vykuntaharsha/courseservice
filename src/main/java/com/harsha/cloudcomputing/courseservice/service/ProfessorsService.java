@@ -71,7 +71,7 @@ public class ProfessorsService {
     public Professor getProfessor(String id) {
         Professor prof = new Professor();
         prof.setId(id);
-        DynamoDBQueryExpression<Professor> queryExpression =
+        final DynamoDBQueryExpression<Professor> queryExpression =
                 new DynamoDBQueryExpression<Professor>().withHashKeyValues(prof).withLimit(1);
         List<Professor> professors = mapper.query(Professor.class, queryExpression);
         try {
@@ -87,7 +87,7 @@ public class ProfessorsService {
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
         eav.put(":id", new AttributeValue().withS(professorId));
 
-        DynamoDBQueryExpression<Professor> queryExpression =
+        final DynamoDBQueryExpression<Professor> queryExpression =
                 new DynamoDBQueryExpression<Professor>().withIndexName("professorId-index")
                         .withKeyConditionExpression("professorId = :id")
                         .withExpressionAttributeValues(eav).withConsistentRead(false).withLimit(1);
@@ -129,15 +129,24 @@ public class ProfessorsService {
     }
 
     public List<Professor> getProfessorsWith(String program, Integer year) {
-        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":program", new AttributeValue().withS(program));
+        eav.put(":year", new AttributeValue().withS(year.toString()));
+
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("begins_with(joiningDate, :year) and program = :program")
+                .withExpressionAttributeValues(eav);
         PaginatedScanList<Professor> professors = mapper.scan(Professor.class, scanExpression);
         professors.loadAllResults();
         return professors;
     }
 
     public List<Professor> getProfessorsOfProgram(String program) {
-        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-        return null;
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":program", new AttributeValue().withS(program));
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("program = :program").withExpressionAttributeValues(eav);
+        return mapper.scan(Professor.class, scanExpression);
     }
 
     public List<Professor> getProfessorsJoinedInYear(Integer year) {
