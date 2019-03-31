@@ -13,7 +13,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.harsha.cloudcomputing.courseservice.datamodel.DynamoDBConnector;
-import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
 import org.apache.log4j.Logger;
 
@@ -22,7 +21,6 @@ import org.apache.log4j.Logger;
  */
 public class ProfessorsService {
     private static Logger log = Logger.getLogger(ProfessorsService.class);
-    static HashMap<Long, Professor> prof_Map = InMemoryDatabase.getProfessorDB();
 
     AmazonDynamoDB dynamoDB;
     DynamoDBMapper mapper;
