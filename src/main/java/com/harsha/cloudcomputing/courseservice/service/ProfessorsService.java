@@ -12,13 +12,11 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.harsha.cloudcomputing.courseservice.datamodel.DynamoDBConnector;
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
 import com.harsha.cloudcomputing.courseservice.util.ApplicationUtil;
-import org.apache.log4j.Logger;
 
 /**
  * ProfessorsService
  */
 public class ProfessorsService {
-    private static Logger log = Logger.getLogger(ProfessorsService.class);
 
     AmazonDynamoDB dynamoDB;
     DynamoDBMapper mapper;
