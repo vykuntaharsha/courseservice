@@ -15,7 +15,8 @@ import org.apache.log4j.Logger;
  * DynamoDBTables
  */
 public class DynamoDBTables {
-    static List<Class<?>> tableClasses = Arrays.asList(Professor.class);
+    static List<Class<?>> tableClasses = Arrays.asList(Professor.class, Course.class, Student.class,
+            Board.class, Announcement.class);
     private static Logger log = Logger.getLogger(DynamoDBTables.class);
 
     public static void createTablesIfNotExist() {

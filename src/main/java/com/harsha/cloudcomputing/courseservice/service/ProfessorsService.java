@@ -1,8 +1,5 @@
 package com.harsha.cloudcomputing.courseservice.service;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +11,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.harsha.cloudcomputing.courseservice.datamodel.DynamoDBConnector;
 import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
+import com.harsha.cloudcomputing.courseservice.util.ApplicationUtil;
 import org.apache.log4j.Logger;
 
 /**
@@ -40,29 +38,20 @@ public class ProfessorsService {
         return scanList;
     }
 
-    public List<Professor> getProfessors(Map<String, AttributeValue> lastEvaluatedKey,
-            Integer limit) {
-        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression().withLimit(limit)
-                .withExclusiveStartKey(lastEvaluatedKey);
-
-        PaginatedScanList<Professor> scanList = mapper.scan(Professor.class, scanExpression);
-        return scanList;
-    }
-
     // Adding a professor
     public Professor addProfessor(Professor prof) {
         // Updating prof id
         prof.setProfessorId(prof.getFirstName() + "-" + prof.getLastName());
 
-        prof.setJoiningDate(getCurrentUTCTimeString());
+        prof.setJoiningDate(ApplicationUtil.getCurrentUTCTimeString());
         mapper.save(prof);
         return prof;
     }
 
     // Adding a professor
     public Professor addProfessor(String firstName, String lastName, String programId) {
-        Professor prof =
-                new Professor(null, firstName, lastName, programId, Instant.now().toString());
+        Professor prof = new Professor(null, firstName, lastName, programId,
+                ApplicationUtil.getCurrentUTCTimeString());
         return addProfessor(prof);
     }
 
@@ -144,26 +133,21 @@ public class ProfessorsService {
         eav.put(":program", new AttributeValue().withS(program));
         final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression("program = :program").withExpressionAttributeValues(eav);
-        return mapper.scan(Professor.class, scanExpression);
+        PaginatedScanList<Professor> professors = mapper.scan(Professor.class, scanExpression);
+        professors.loadAllResults();
+        return professors;
     }
 
     public List<Professor> getProfessorsJoinedInYear(Integer year) {
         Map<String, AttributeValue> eav = new HashMap<>();
         eav.put(":year", new AttributeValue().withS(year.toString()));
-        log.info("Fetching professors with joining year: " + year);
 
         final DynamoDBScanExpression scanExpression =
                 new DynamoDBScanExpression().withFilterExpression("begins_with(joiningDate, :year)")
                         .withExpressionAttributeValues(eav);
 
-        List<Professor> professors = mapper.scan(Professor.class, scanExpression);
-
-        log.info("Total results found: " + professors.size());
+        PaginatedScanList<Professor> professors = mapper.scan(Professor.class, scanExpression);
+        professors.loadAllResults();
         return professors;
-    }
-
-    private String getCurrentUTCTimeString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        return Instant.now().atZone(ZoneOffset.UTC).format(formatter);
     }
 }

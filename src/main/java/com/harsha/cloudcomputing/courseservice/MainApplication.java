@@ -17,7 +17,8 @@ public class MainApplication extends Application {
         try {
             DynamoDBTables.createTablesIfNotExist();
         } catch (Exception e) {
-            Logger.getLogger(MainApplication.class).error("DynamoDB tables creation failed");
+            Logger.getLogger(MainApplication.class)
+                    .error("DynamoDB tables creation failed. Explanation : " + e);
         }
     }
 

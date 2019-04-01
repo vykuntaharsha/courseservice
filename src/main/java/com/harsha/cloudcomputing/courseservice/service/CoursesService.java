@@ -2,46 +2,45 @@ package com.harsha.cloudcomputing.courseservice.service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import java.util.Map;
+import java.util.UUID;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.harsha.cloudcomputing.courseservice.datamodel.Course;
-import com.harsha.cloudcomputing.courseservice.datamodel.InMemoryDatabase;
-import com.harsha.cloudcomputing.courseservice.datamodel.Professor;
-import com.harsha.cloudcomputing.courseservice.datamodel.Student;
-
-import org.apache.commons.lang3.StringUtils;
+import com.harsha.cloudcomputing.courseservice.datamodel.DynamoDBConnector;
 
 /**
  * CoursesService
  */
 public class CoursesService {
 
-    private static HashMap<Long, Course> course_Map = InMemoryDatabase.getCourseDB();
+    private DynamoDBMapper mapper;
 
     public CoursesService() {
-
+        DynamoDBConnector.init();
+        mapper = new DynamoDBMapper(new DynamoDBConnector().getClient());
     }
 
     public Course addCourse(Course course) {
-        long nextAvailableId = course_Map.size() + 1;
-        String courseId = "C-" + StringUtils.leftPad(String.valueOf(nextAvailableId), 4, '0');
+        String courseId = "course-" + UUID.randomUUID();
         course.setCourseId(courseId);
-        course.setId(nextAvailableId);
-        course_Map.put(nextAvailableId, course);
+        mapper.save(course);
         return course;
     }
 
     /**
      * 
-     * @param name              to set for the course
-     * @param board             to set for the course
-     * @param professor         to set for the course
-     * @param teachingAssistant to set for the course
+     * @param name                to set for the course
+     * @param board               to set for the course
+     * @param professorId         to set for the course
+     * @param teachingAssistantId to set for the course
      * @return the created course
      */
-    public Course addCourse(String name, Professor professor, Student teachingAssistant, long program) {
-        Course course = new Course(null, name, professor, teachingAssistant, program);
+    public Course addCourse(String name, String boardId, String professorId,
+            String teachingAssistantId, String program) {
+        Course course = new Course(null, name, boardId, program, professorId, teachingAssistantId);
         return addCourse(course);
     }
 
@@ -49,12 +48,9 @@ public class CoursesService {
      * @return all available courses
      */
     public List<Course> getCourses() {
-        return course_Map.values().stream().filter(c -> c != null).collect(Collectors.toList());
-    }
-
-    public List<Course> getCoursesOfProfessor(String professorId) {
-        return course_Map.values().stream().filter(c -> c != null).filter(c -> c.getProfessor().getId() == professorId)
-                .collect(Collectors.toList());
+        PaginatedList<Course> courses = mapper.scan(Course.class, new DynamoDBScanExpression());
+        courses.loadAllResults();
+        return courses;
     }
 
     /**
@@ -62,22 +58,9 @@ public class CoursesService {
      * @param id to retrieve course
      * @return the course object
      */
-    public Course getCourse(Long id) {
-        Course course = course_Map.get(id);
-        System.out.println("Item retrieved:");
-        System.out.println(course);
+    public Course getCourse(String id) {
+        Course course = mapper.load(Course.class, id);
         return course;
-    }
-
-    /**
-     * 
-     * @param id to delete course
-     * @return the deleted course object
-     */
-    public Course deleteCourse(Long id) {
-        Course courseToDelete = course_Map.get(id);
-        course_Map.put(id, null);
-        return courseToDelete;
     }
 
     /**
@@ -86,51 +69,86 @@ public class CoursesService {
      * @param course information to update
      * @return the updated course object
      */
-    public Course updateCourseInformation(Long id, Course course) {
-        Course courseToUpdate = course_Map.get(id);
+    public Course updateCourse(String id, Course course) {
+        Course courseToUpdate = getCourse(id);
         if (courseToUpdate == null) {
             return null;
         }
         course.setCourseId(courseToUpdate.getCourseId());
-        course_Map.put(id, course);
+        course.setId(courseToUpdate.getId());
+        mapper.save(course);
         return course;
     }
 
     /**
      * 
-     * @param id      of course to enroll student
-     * @param student object to enroll
+     * @param id to delete course
+     * @return the deleted course object
+     */
+    public Course deleteCourse(String id) {
+        Course courseToDelete = getCourse(id);
+        if (courseToDelete == null) {
+            return null;
+        }
+        mapper.delete(courseToDelete);
+        return courseToDelete;
+    }
+
+    /**
+     * 
+     * @param id        of course to enroll student
+     * @param studentId studentId to enroll
      * @return updated course object
      */
-    public Course enrollStudent(Long id, Student student) {
-        Course courseToEnroll = course_Map.get(id);
+    public Course enrollStudent(String id, String studentId) {
+        Course courseToEnroll = getCourse(id);
         if (courseToEnroll == null) {
             return null;
         }
-        courseToEnroll.getEnrolledStudents().add(student);
+        courseToEnroll.getRoster().add(studentId);
+        mapper.save(courseToEnroll);
         return courseToEnroll;
     }
 
     /**
-     * @param id      of course to disenroll student
-     * @param student object to disenroll
+     * @param id        of course to disenroll student
+     * @param studentId studentId to disenroll
      * @return updated course object
      */
-    public Course disenrollStudent(Long id, Student student) {
-        Course courseToDisenroll = course_Map.get(id);
+    public Course disenrollStudent(String id, String studentId) {
+        Course courseToDisenroll = getCourse(id);
         if (courseToDisenroll == null) {
             return null;
         }
-        courseToDisenroll.getEnrolledStudents().removeIf(s -> s.getId() == student.getId());
+        courseToDisenroll.getRoster().removeIf(sId -> sId.equals(studentId));
+        mapper.save(courseToDisenroll);
         return courseToDisenroll;
     }
 
-    public Stream<Course> getCourseStream() {
-        return course_Map.values().stream().filter(c -> c != null);
+
+    public List<Course> getCoursesOfProgram(String program) {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":program", new AttributeValue().withS(program));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("program = :program").withExpressionAttributeValues(eav);
+
+        PaginatedList<Course> courseList = mapper.scan(Course.class, scanExpression);
+        courseList.loadAllResults();
+        return courseList;
     }
 
-    public List<Course> getCoursesOfProgram(long programId) {
-        return getCourseStream().filter(c -> c.getProgramId() == programId).collect(Collectors.toList());
+    public List<Course> getCoursesOfProfessor(String professorId) {
+        Map<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":professorId", new AttributeValue().withS(professorId));
+
+        DynamoDBScanExpression scanExpression =
+                new DynamoDBScanExpression().withFilterExpression("professorId = :professorId")
+                        .withExpressionAttributeValues(eav);
+
+        PaginatedList<Course> courseList = mapper.scan(Course.class, scanExpression);
+        courseList.loadAllResults();
+        return courseList;
     }
 
 }
